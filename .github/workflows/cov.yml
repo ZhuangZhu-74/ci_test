@@ -18,6 +18,6 @@ jobs:
       - name: Display coverage summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: .coverage_torch
+          filename: ./testdir/.coverage_torch
           badge: true
           format: markdown
