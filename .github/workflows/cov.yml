@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Display coverage summary
-        uses: cgarciae/code-coverage-summary@v1
+        uses: cgarciae/code-coverage-summary@v1.3.0
         with:
           coverage-file: .coverage_torch
           badge: true
