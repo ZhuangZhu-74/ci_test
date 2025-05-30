@@ -1,0 +1,19 @@
+name: view the coverage file
+
+on:
+  workflow_dispatch:
+
+jobs:
+  parse-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Display coverage summary
+        uses: cgarciae/code-coverage-summary@v1
+        with:
+          coverage-file: .coverage_torch
+          badge: true
+          format: markdown
