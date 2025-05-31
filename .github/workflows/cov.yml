@@ -10,11 +10,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: show dir
+      - name: Display branch
         run: |
-          pwd;
-          ls -la;
-          echo $GITHUB_WORKSPACE
+          echo ${GITHUB_REF};
+          echo $(git branch);
       - name: Display coverage summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
