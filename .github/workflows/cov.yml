@@ -32,9 +32,9 @@ jobs:
 
       - name: Set coverage path
         run: |
-          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+          if [[ "${{ github.head_ref || github.ref_name }}" == "main" ]]; then
             echo "COVERAGE_PATH=coverage/coverage.xml" | tee -a $GITHUB_ENV
-          elif [[ "${GITHUB_REF_NAME}" == release/* ]]; then
+          elif [[ "${{ github.head_ref || github.ref_name }}" == release/* ]]; then
             echo "COVERAGE_PATH=${GITHUB_REF_NAME}/coverage/coverage.xml" | tee -a $GITHUB_ENV
           fi
 
@@ -47,9 +47,9 @@ jobs:
           diff: true
           diff-branch: main
           diff-storage: gh-pages
-          before-push-command: |
-            mkdir -p "$(dirname "$COVERAGE_PATH")"
-            mv coverage.xml "$COVERAGE_PATH"
+          # before-push-command: |
+          #  mkdir -p "$(dirname "$COVERAGE_PATH")"
+          #  mv coverage.xml "$COVERAGE_PATH"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERAGE_PATH: ${{ env.COVERAGE_PATH }}
