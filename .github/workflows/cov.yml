@@ -31,27 +31,25 @@ jobs:
           coverage xml
 
       - name: Set coverage path
-        id: set-path
         run: |
-          BRANCH_NAME="${GITHUB_REF##*/}"
-          if [[ "$BRANCH_NAME" == "main" ]]; then
-            echo "coverage_path=coverage/coverage.xml" >> $GITHUB_OUTPUT
-          elif [[ "$BRANCH_NAME" == release/* ]]; then
-            echo "coverage_path=$BRANCH_NAME/coverage/coverage.xml" >> $GITHUB_OUTPUT
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            echo "COVERAGE_PATH=coverage/coverage.xml" | tee -a $GITHUB_ENV
+          elif [[ "${GITHUB_REF_NAME}" == release/* ]]; then
+            echo "COVERAGE_PATH=${GITHUB_REF_NAME}/coverage/coverage.xml" | tee -a $GITHUB_ENV
           fi
 
       - name: Report coverage
         uses: insightsengineering/coverage-action@v2
         with:
-          path: ${{ steps.set-path.outputs.coverage_path }}
+          path: ${{ env.COVERAGE_PATH }}
           publish: true
           threshold: 95
           diff: true
           diff-branch: main
           diff-storage: gh-pages
           before-push-command: |
-            mkdir -p "$(dirname "${COVERAGE_PATH}")"
-            mv coverage.xml "${COVERAGE_PATH}"
+            mkdir -p "$(dirname "$COVERAGE_PATH")"
+            mv coverage.xml "$COVERAGE_PATH"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERAGE_PATH: ${{ steps.set-path.outputs.coverage_path }}
+          COVERAGE_PATH: ${{ env.COVERAGE_PATH }}
