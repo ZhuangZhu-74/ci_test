@@ -3,7 +3,9 @@ name: Coverage Report
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main]
+    branches:
+      - 'main'
+      - 'release/**'
 
 jobs:
   test:
@@ -25,21 +27,30 @@ jobs:
 
       - name: Run tests and generate coverage
         run: |
-          # coverage run -m pytest
           PYTHONPATH=. pytest -s --cov=mymodule
-          ls -la
           coverage xml
+
+      - name: Set coverage path
+        id: set-path
+        run: |
+          BRANCH_NAME="${GITHUB_REF##*/}"
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            echo "coverage_path=coverage/coverage.xml" >> $GITHUB_ENV
+          elif [[ "$BRANCH_NAME" == release/* ]]; then
+            echo "coverage_path=$BRANCH_NAME/coverage/coverage.xml" >> $GITHUB_ENV
+          fi
 
       - name: Report coverage
         uses: insightsengineering/coverage-action@v2
         with:
-          path: coverage.xml
+          path: ${{ env.coverage_path }}
           publish: true
+          threshold: 95
           diff: true
           diff-branch: main
-          diff-storage: _xml_coverage_reports
-          coverage-summary-title: "Code Coverage Summary"
-          coverage-reduction-failure: false
-          new-uncovered-statements-failure: false
+          diff-storage: gh-pages
+          before-push-command: |
+            mkdir -p "$(dirname "${{ env.coverage_path }}")"
+            mv coverage.xml "${{ env.coverage_path }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
