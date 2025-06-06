@@ -54,7 +54,7 @@ jobs:
           diff: true
           diff-branch: ${{ env.TARGET_BRANCH }}
           diff-storage: gh-pages
-          storage-subdirectory: ${{ env.SOURCE_BRANCH }}
+          # storage-subdirectory: 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SOURCE_BRANCH: ${{ env.SOURCE_BRANCH }}
