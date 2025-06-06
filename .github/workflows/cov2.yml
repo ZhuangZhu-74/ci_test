@@ -1,0 +1,62 @@
+name: Coverage Report
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+      - 'release/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov coverage
+
+      - name: Run tests and generate coverage
+        run: |
+          PYTHONPATH=. pytest -s --cov=mymodule
+          coverage xml
+
+      - name: set env from pull_request
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo "SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}" | tee -a $GITHUB_ENV
+          echo "TARGET_BRANCH=${{ github.event.pull_request.base.ref }}" | tee -a $GITHUB_ENV
+        
+      # - name: Set coverage path
+      #   run: |
+      #     if [[ "${{ github.head_ref || github.ref_name }}" == "main" ]]; then
+      #       echo "COVERAGE_PATH=coverage/coverage.xml" | tee -a $GITHUB_ENV
+      #     else
+      #       echo "COVERAGE_PATH=${GITHUB_REF_NAME}/coverage/coverage.xml" | tee -a $GITHUB_ENV
+      #     fi
+
+      - name: Report coverage
+        uses: insightsengineering/coverage-action@v2
+        with:
+          # path: ${{ env.COVERAGE_PATH }}
+          token: ${{ secrets.CI_TOKEN }}
+          publish: true
+          threshold: 95
+          diff: true
+          diff-branch: ${{ env.TARGET_BRANCH }}
+          diff-storage: gh-pages
+          storage-subdirectory: ${{ env.SOURCE_BRANCH }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_BRANCH: ${{ env.SOURCE_BRANCH }}
+          TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
+          # COVERAGE_PATH: ${{ env.COVERAGE_PATH }}
