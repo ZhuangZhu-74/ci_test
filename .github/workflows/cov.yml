@@ -34,7 +34,7 @@ jobs:
         run: |
           if [[ "${{ github.head_ref || github.ref_name }}" == "main" ]]; then
             echo "COVERAGE_PATH=coverage/coverage.xml" | tee -a $GITHUB_ENV
-          elif [[ "${{ github.head_ref || github.ref_name }}" == release/** ]]; then
+          else
             echo "COVERAGE_PATH=${GITHUB_REF_NAME}/coverage/coverage.xml" | tee -a $GITHUB_ENV
           fi
 
@@ -42,6 +42,7 @@ jobs:
         uses: insightsengineering/coverage-action@v2
         with:
           # path: ${{ env.COVERAGE_PATH }}
+          token: ${{ secrets.GITHUB_CI_TOKEN }}
           publish: true
           threshold: 95
           diff: true
