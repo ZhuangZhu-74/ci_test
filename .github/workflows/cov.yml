@@ -34,22 +34,20 @@ jobs:
         run: |
           if [[ "${{ github.head_ref || github.ref_name }}" == "main" ]]; then
             echo "COVERAGE_PATH=coverage/coverage.xml" | tee -a $GITHUB_ENV
-          elif [[ "${{ github.head_ref || github.ref_name }}" == release/* ]]; then
+          elif [[ "${{ github.head_ref || github.ref_name }}" == release/** ]]; then
             echo "COVERAGE_PATH=${GITHUB_REF_NAME}/coverage/coverage.xml" | tee -a $GITHUB_ENV
           fi
 
       - name: Report coverage
         uses: insightsengineering/coverage-action@v2
         with:
-          path: ${{ env.COVERAGE_PATH }}
+          # path: ${{ env.COVERAGE_PATH }}
           publish: true
           threshold: 95
           diff: true
-          diff-branch: main
+          diff-branch: ${{ github.ref_name }}
           diff-storage: gh-pages
-          # before-push-command: |
-          #  mkdir -p "$(dirname "$COVERAGE_PATH")"
-          #  mv coverage.xml "$COVERAGE_PATH"
+          storage-subdirectory: ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERAGE_PATH: ${{ env.COVERAGE_PATH }}
+          # COVERAGE_PATH: ${{ env.COVERAGE_PATH }}
