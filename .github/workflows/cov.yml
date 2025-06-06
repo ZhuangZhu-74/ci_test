@@ -42,7 +42,7 @@ jobs:
         uses: insightsengineering/coverage-action@v2
         with:
           # path: ${{ env.COVERAGE_PATH }}
-          token: ${{ secrets.GITHUB_CI_TOKEN }}
+          token: ${{ secrets.CI_TOKEN }}
           publish: true
           threshold: 95
           diff: true
