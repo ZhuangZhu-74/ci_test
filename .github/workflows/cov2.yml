@@ -41,7 +41,7 @@ jobs:
           elif [[ "${{ github.event.pull_request.base.ref }}" == release/* ]]; then
             echo "TARGET_COV_PATH=../${{ github.event.pull_request.base.ref }}/coverage" | tee -a $GITHUB_ENV
           else
-            echo "unexpected“
+            echo "unexpected branch"
           fi
         
 
