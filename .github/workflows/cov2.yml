@@ -35,14 +35,15 @@ jobs:
         run: |
           echo "SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}" | tee -a $GITHUB_ENV
           echo "TARGET_BRANCH=${{ github.event.pull_request.base.ref }}" | tee -a $GITHUB_ENV
+          # torch or onnx maybe part of this var
+          if [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
+            echo "TARGET_COV_PATH=../coverage" | tee -a $GITHUB_ENV
+          elif [[ "${{ github.event.pull_request.base.ref }}" == release/* ]]; then
+            echo "TARGET_COV_PATH=../${{ github.event.pull_request.base.ref }}/coverage" | tee -a $GITHUB_ENV
+          else
+            echo "unexpected“
+          fi
         
-      # - name: Set coverage path
-      #   run: |
-      #     if [[ "${{ github.head_ref || github.ref_name }}" == "main" ]]; then
-      #       echo "COVERAGE_PATH=coverage/coverage.xml" | tee -a $GITHUB_ENV
-      #     else
-      #       echo "COVERAGE_PATH=${GITHUB_REF_NAME}/coverage/coverage.xml" | tee -a $GITHUB_ENV
-      #     fi
 
       - name: Report coverage
         uses: insightsengineering/coverage-action@v2
@@ -52,11 +53,11 @@ jobs:
           publish: true
           threshold: 95
           diff: true
-          diff-branch: ${{ env.TARGET_BRANCH }}
+          diff-branch: .
           diff-storage: gh-pages
-          # storage-subdirectory: 
+          storage-subdirectory: ${{ env.TARGET_COV_PATH }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SOURCE_BRANCH: ${{ env.SOURCE_BRANCH }}
-          TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
-          # COVERAGE_PATH: ${{ env.COVERAGE_PATH }}
+          SOURCE_BRANCH: ${{ env.SOURCE_BRANCH }} # pr branch
+          TARGET_BRANCH: ${{ env.TARGET_BRANCH }} # main or rls branch
+          TARGET_COV_PATH: ${{ env.TARGET_COV_PATH }}
