@@ -37,9 +37,9 @@ jobs:
           echo "TARGET_BRANCH=${{ github.event.pull_request.base.ref }}" | tee -a $GITHUB_ENV
           # torch or onnx maybe part of this var
           if [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
-            echo "TARGET_COV_PATH=../coverage" | tee -a $GITHUB_ENV
+            echo "TARGET_COV_PATH=../../../coverage" | tee -a $GITHUB_ENV
           elif [[ "${{ github.event.pull_request.base.ref }}" == release/* ]]; then
-            echo "TARGET_COV_PATH=../${{ github.event.pull_request.base.ref }}/coverage" | tee -a $GITHUB_ENV
+            echo "TARGET_COV_PATH=../../../${{ github.event.pull_request.base.ref }}/coverage" | tee -a $GITHUB_ENV
           else
             echo "unexpected branch"
           fi
@@ -53,7 +53,7 @@ jobs:
           publish: true
           threshold: 95
           diff: true
-          diff-branch: .
+          diff-branch: main/level
           diff-storage: gh-pages
           storage-subdirectory: ${{ env.TARGET_COV_PATH }}
         env:
