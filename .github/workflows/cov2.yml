@@ -33,8 +33,10 @@ jobs:
       - name: set env from pull_request
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          echo "SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}" | tee -a $GITHUB_ENV
-          echo "TARGET_BRANCH=${{ github.event.pull_request.base.ref }}" | tee -a $GITHUB_ENV
+          SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}
+          TARGET_BRANCH=${{ github.event.pull_request.base.ref }}
+          echo "SOURCE_BRANCH=${SOURCE_BRANCH}" | tee -a $GITHUB_ENV
+          echo "TARGET_BRANCH=${TARGET_BRANCH}" | tee -a $GITHUB_ENV
           # torch or onnx maybe part of this var
           if [[ "${TARGET_BRANCH}" == "main" ]]; then
             echo "TARGET_COV_PATH=../../../${SOURCE_BRANCH}/coverage" | tee -a $GITHUB_ENV
