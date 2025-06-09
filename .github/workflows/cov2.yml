@@ -36,10 +36,10 @@ jobs:
           echo "SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}" | tee -a $GITHUB_ENV
           echo "TARGET_BRANCH=${{ github.event.pull_request.base.ref }}" | tee -a $GITHUB_ENV
           # torch or onnx maybe part of this var
-          if [[ "${{ github.event.pull_request.base.ref }}" == "main" ]]; then
-            echo "TARGET_COV_PATH=../../../coverage" | tee -a $GITHUB_ENV
-          elif [[ "${{ github.event.pull_request.base.ref }}" == release/* ]]; then
-            echo "TARGET_COV_PATH=../../../${{ github.event.pull_request.base.ref }}/coverage" | tee -a $GITHUB_ENV
+          if [[ "${TARGET_BRANCH}" == "main" ]]; then
+            echo "TARGET_COV_PATH=../../../${SOURCE_BRANCH}/coverage" | tee -a $GITHUB_ENV
+          elif [[ "${TARGET_BRANCH}" == release/* ]]; then
+            echo "TARGET_COV_PATH=../../../${SOURCE_BRANCH}/coverage" | tee -a $GITHUB_ENV
           else
             echo "unexpected branch"
           fi
