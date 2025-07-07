@@ -1,5 +1,4 @@
-# test_httpbin.py
-
+import os
 import pytest
 import requests
 import json
