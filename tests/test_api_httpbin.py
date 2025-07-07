@@ -5,7 +5,8 @@ import requests
 import json
 
 def load_test_cases():
-    with open('cases_test_api_httpbin.json', 'r') as f:
+    case_path = os.path.join(os.path.dirname(__file__), 'test_cases.json')
+    with open(case_path, 'r') as f:
         return json.load(f)
 
 @pytest.mark.parametrize("test_case", load_test_cases())

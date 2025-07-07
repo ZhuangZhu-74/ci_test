@@ -27,6 +27,25 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest requests
 
-    - name: Run tests
+    - name: Run tests with html output
       run: |
-        pytest tests/test_api_httpbin.py -v
+        pytest tests/test_api_httpbin.py -v --html=reports/apitest_report.html
+
+    - name: Checkout gh-pages branch
+      uses: actions/checkout@v3
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Copy report to gh-pages branch
+      run: |
+        mkdir -p gh-pages/apitest
+        cp reports/apitest_report.html gh-pages/apitest/
+
+    - name: Commit and push report to gh-pages
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@users.noreply.github.com'
+        git add apitest/apitest_report.html
+        git commit -m "Update API test report"
+        git push origin gh-pages
