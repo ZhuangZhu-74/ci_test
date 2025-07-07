@@ -4,7 +4,7 @@ import requests
 import json
 
 def load_test_cases():
-    case_path = os.path.join(os.path.dirname(__file__), 'test_cases.json')
+    case_path = os.path.join(os.path.dirname(__file__), 'cases_test_api_httpbin.json')
     with open(case_path, 'r') as f:
         return json.load(f)
 
