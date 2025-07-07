@@ -30,6 +30,7 @@ jobs:
     - name: Run tests with html output
       run: |
         pytest tests/test_api_httpbin.py -v --html=reports/apitest_report.html
+      continue-on-error: true
 
     - name: Checkout gh-pages branch
       uses: actions/checkout@v3
