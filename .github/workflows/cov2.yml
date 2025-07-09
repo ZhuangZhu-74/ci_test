@@ -1,4 +1,4 @@
-name: Coverage Report V2
+name: Coverage Report V2 250709
 
 on:
   workflow_dispatch:
@@ -30,36 +30,36 @@ jobs:
           PYTHONPATH=. pytest -s --cov=mymodule
           coverage xml
 
-      - name: set env from pull_request
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}
-          TARGET_BRANCH=${{ github.event.pull_request.base.ref }}
-          echo "SOURCE_BRANCH=${SOURCE_BRANCH}" | tee -a $GITHUB_ENV
-          echo "TARGET_BRANCH=${TARGET_BRANCH}" | tee -a $GITHUB_ENV
-          # torch or onnx maybe part of this var
-          if [[ "${TARGET_BRANCH}" == "main" ]]; then
-            echo "TARGET_COV_PATH=../../../${SOURCE_BRANCH}/coverage" | tee -a $GITHUB_ENV
-          elif [[ "${TARGET_BRANCH}" == release/* ]]; then
-            echo "TARGET_COV_PATH=../../../${SOURCE_BRANCH}/coverage" | tee -a $GITHUB_ENV
-          else
-            echo "unexpected branch"
-          fi
+      # - name: set env from pull_request
+      #   if: ${{ github.event_name == 'pull_request' }}
+      #   run: |
+      #     SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}
+      #     TARGET_BRANCH=${{ github.event.pull_request.base.ref }}
+      #     echo "SOURCE_BRANCH=${SOURCE_BRANCH}" | tee -a $GITHUB_ENV
+      #     echo "TARGET_BRANCH=${TARGET_BRANCH}" | tee -a $GITHUB_ENV
+      #     # torch or onnx maybe part of this var
+      #     if [[ "${TARGET_BRANCH}" == "main" ]]; then
+      #       echo "TARGET_COV_PATH=../../../${SOURCE_BRANCH}/coverage" | tee -a $GITHUB_ENV
+      #     elif [[ "${TARGET_BRANCH}" == release/* ]]; then
+      #       echo "TARGET_COV_PATH=../../../${SOURCE_BRANCH}/coverage" | tee -a $GITHUB_ENV
+      #     else
+      #       echo "unexpected branch"
+      #     fi
         
 
       - name: Report coverage
         uses: insightsengineering/coverage-action@v2
         with:
-          # path: ${{ env.COVERAGE_PATH }}
+          path: coverage.xml
           token: ${{ secrets.CI_TOKEN }}
           publish: true
           threshold: 95
           diff: true
-          diff-branch: main/level
-          diff-storage: gh-pages
-          storage-subdirectory: ${{ env.TARGET_COV_PATH }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SOURCE_BRANCH: ${{ env.SOURCE_BRANCH }} # pr branch
-          TARGET_BRANCH: ${{ env.TARGET_BRANCH }} # main or rls branch
-          TARGET_COV_PATH: ${{ env.TARGET_COV_PATH }}
+          diff-branch: main
+          diff-storage: _testcov
+          # storage-subdirectory: ${{ env.TARGET_COV_PATH }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #   SOURCE_BRANCH: ${{ env.SOURCE_BRANCH }} # pr branch
+        #   TARGET_BRANCH: ${{ env.TARGET_BRANCH }} # main or rls branch
+
