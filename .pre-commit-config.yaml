@@ -1,39 +1,39 @@
 repos:
 
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-    -   id: check-added-large-files
-    -   id: check-yaml
-    -   id: end-of-file-fixer
-    -   id: mixed-line-ending
-    -   id: requirements-txt-fixer
-    -   id: trailing-whitespace
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-yaml
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+  - id: requirements-txt-fixer
+  - id: trailing-whitespace
 
--   repo: https://github.com/google/yapf
-    rev: v0.43.0
-    hooks:
-    -   id: yapf
+- repo: https://github.com/google/yapf
+  rev: v0.43.0
+  hooks:
+    - id: yapf
 
--   repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-    -   id: flake8
-        args: ['--config=.flake8']
+- repo: https://github.com/pycqa/flake8
+  rev: 7.0.0
+  hooks:
+    - id: flake8
+      args: ['--config=.flake8']
 
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.6.1
-    hooks:
-    -   id: mypy
+- repo: https://github.com/python/mypy
+  rev: v1.8.0
+  hooks:
+    - id: mypy
 
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v1.5.7
+- repo: https://github.com/hhatto/autopep8
+  rev: v1.6.0
   hooks:
     - id: autopep8
       args: ['--max-line-length=79']
 
-- repo: https://github.com/pre-commit/mirrors-black
-  rev: v22.3.0
+- repo: https://github.com/psf/black-pre-commit-mirror
+  rev: v25.1.0
   hooks:
     - id: black
       language_version: python3
