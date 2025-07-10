@@ -38,4 +38,5 @@ jobs:
 
       - name: Run pre-commit hooks
         run: |
-          pre-commit run --all-files
+          # pre-commit autoupdate # update config file rev
+          pre-commit run --all-files --verbose --show-diff-on-failure --color=always
