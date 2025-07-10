@@ -45,7 +45,7 @@ jobs:
       #     else
       #       echo "unexpected branch"
       #     fi
-        
+
 
       - name: Report coverage
         uses: insightsengineering/coverage-action@v2
@@ -62,4 +62,3 @@ jobs:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         #   SOURCE_BRANCH: ${{ env.SOURCE_BRANCH }} # pr branch
         #   TARGET_BRANCH: ${{ env.TARGET_BRANCH }} # main or rls branch
-
