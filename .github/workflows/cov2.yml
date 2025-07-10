@@ -27,7 +27,7 @@ jobs:
 
       - name: Run tests and generate coverage
         run: |
-          PYTHONPATH=. pytest -s --cov=mymodule
+          PYTHONPATH=. pytest tests/unit -s --cov=mymodule
           coverage xml
 
       # - name: set env from pull_request
