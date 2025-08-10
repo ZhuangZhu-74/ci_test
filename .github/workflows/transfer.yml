@@ -1,0 +1,116 @@
+name: Transfer Release Assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      down_url:
+        description: 'GitHub release的下载地址'
+        required: true
+        type: string
+      storage_branch:
+        description: '用于存储文件的分支'
+        required: false
+        default: '_transfer'
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check workflow inputs
+        id: check_url
+        run: |
+          # 验证down_url是否符合GitHub release下载地址格式
+          if [[ ! ${{ github.event.inputs.down_url }} =~ ^https://github\.com/[^/]+/[^/]+/releases/download/[^/]+/[^/]+$ ]]; then
+            echo "::error::down_url格式不正确，请提供有效的GitHub release下载地址"
+            exit 1
+          fi
+          
+          # 解析URL获取必要信息
+          URL="${{ github.event.inputs.down_url }}"
+          
+          # 提取用户名和仓库名 (例如: oldj/SwitchHosts)
+          REPO_PART=$(echo "$URL" | awk -F'github.com/' '{print $2}' | awk -F'/releases' '{print $1}')
+          USER=$(echo "$REPO_PART" | awk -F'/' '{print $1}')
+          REPO=$(echo "$REPO_PART" | awk -F'/' '{print $2}')
+          
+          # 提取版本号 (例如: v4.2.0)
+          VERSION=$(echo "$URL" | awk -F'/download/' '{print $2}' | awk -F'/' '{print $1}')
+          
+          # 提取文件名 (例如: SwitchHosts_windows_portable_x64_4.2.0.6119.exe)
+          FILENAME=$(basename "$URL")
+          
+          # 构建目标路径 (例如: oldj_SwitchHosts/v4.2.0)
+          TARGET_PATH="${USER}_${REPO}/${VERSION}"
+          FULL_PATH="${TARGET_PATH}/${FILENAME}"
+          
+          # 设置输出变量供后续步骤使用
+          echo "target_path=$TARGET_PATH" >> $GITHUB_OUTPUT
+          echo "full_path=$FULL_PATH" >> $GITHUB_OUTPUT
+          echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+
+      - name: checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 创建目标分支（如果不存在）
+        run: |
+          BRANCH="${{ github.event.inputs.storage_branch }}"
+          # 检查分支是否存在于远程
+          if ! git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            # 分支不存在，从默认分支创建新分支
+            git checkout -b "$BRANCH"
+            # 创建初始README.md
+            echo "# 转移文件存储库" > README.md
+            echo "" >> README.md
+            echo "| 下载时间（GMT+8） | 下载链接 | 当前路径 |" >> README.md
+            echo "| :--------------- | :------- | :------- |" >> README.md
+            git add README.md
+            # 使用仓库默认的Actor信息
+            git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+            git config --global user.name "${{ github.actor }}"
+            git commit -m "初始化${BRANCH}分支"
+            git push -u origin "$BRANCH"
+          else
+            # 分支存在，直接检出
+            git checkout "$BRANCH"
+          fi
+
+      - name: 创建目标文件夹
+        run: |
+          mkdir -p ${{ steps.check_url.outputs.target_path }}
+
+      - name: 下载文件
+        run: |
+          wget -O ${{ steps.check_url.outputs.full_path }} ${{ github.event.inputs.down_url }}
+
+      - name: 更新README.md
+        run: |
+          # 获取当前时间（GMT+8）
+          CURRENT_TIME=$(TZ='Asia/Shanghai' date +"%Y-%m-%d %H:%M:%S")
+          
+          # 构建新行
+          NEW_ROW="| ${CURRENT_TIME} | [原始链接](${{ github.event.inputs.down_url }}) | ${{ steps.check_url.outputs.full_path }} |"
+          
+          # 在表格后添加新行
+          sed -i "/| :------- |/a ${NEW_ROW}" README.md
+
+      - name: 提交并推送更改
+        run: |
+          # 使用仓库默认的Actor信息
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --global user.name "${{ github.actor }}"
+          git add .
+          git commit -m "添加文件: ${{ steps.check_url.outputs.full_path }}"
+          git push origin ${{ github.event.inputs.storage_branch }}
+
+      - name: 输出成功信息
+        run: |
+          echo "✅ 上传成功!"
+          echo "📂 文件路径: ${{ steps.check_url.outputs.full_path }}"
+          echo "🌿 存储分支: ${{ github.event.inputs.storage_branch }}"
+    
