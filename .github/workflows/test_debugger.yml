@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: create cluster
-        uses: helm/kind=action@v1
+        uses: helm/kind-action@v1
       - name: uses debugger
         uses: shaowenchen/debugger-action@v2
         timeout-minutes: 30
