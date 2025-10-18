@@ -12,4 +12,4 @@ jobs:
         timeout-minutes: 30
         continue-on-error: true
         with:
-          ngork_token: ${{ secrets.NGROK_TOKEN }}
+          ngrok_token: ${{ secrets.NGROK_TOKEN }}
